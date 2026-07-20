@@ -8,6 +8,7 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharac
 
 def run_markdown_ingestion(file_path: str, doc_title: str, version: str):
     try:
+        print("filepath : ", file_path)
         if not os.path.exists(file_path):
             print(f"[Ingestion] File {file_path} tidak ditemukan. Melewati proses otomatisasi.")
             return

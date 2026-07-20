@@ -11,43 +11,7 @@ from pathlib import Path
 logger = logging.getLogger("uvicorn.error")
 router = APIRouter()
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    print("[Startup] Memeriksa data SOP baru untuk di-ingest...")
-    base_path = Path(__file__).resolve().parent[1]  
-    f_path = base_path / "nusantaracare_panduan_operasional_internal_v2.md"
-    print("[path] yang dituju", f_path)
-
-    run_markdown_ingestion(
-        file_path=f_path, 
-        doc_title="Panduan Operasional Internal NusantaraCare", 
-        version="2.0"
-    )
-    yield
-    print("[Shutdown] Mematikan layanan RAG.")
-
-app = FastAPI(
-    title="NusantaraCare RAG System",
-    version="0.1.0",
-    lifespan=lifespan
-)
-
-@app.middleware("http")
-async def catch_exceptions_middleware(request: Request, call_next):
-    try:
-        return await call_next(request)
-    except Exception as exc:
-        print(f" ERROR TERJADI PADA: {request.url.path}")
-        
-        traceback.print_exception(*sys.exc_info())
-        print("="*50 + "\n")
-        
-        return JSONResponse(
-            status_code=500,
-            content={"detail": f"Internal Server Error: {str(exc)}"}
-        )
-
-@app.post("/api/v1/chat", response_model=RAGResponse)
+@router.post("/api/v1/chat", response_model=RAGResponse)
 async def chat_endpoint(payload: QueryInput):
     try:
         response = await AgenticRouter.process_request(payload)
@@ -59,7 +23,7 @@ async def chat_endpoint(payload: QueryInput):
             detail=f"Internal Server Error: {str(e)}"
         )
 
-@app.get("/")
+@router.get("/")
 async def root():
     return {
         "message": "Aplikasi RAG NusantaraCare",
