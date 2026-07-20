@@ -14,9 +14,10 @@ router = APIRouter()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("[Startup] Memeriksa data SOP baru untuk di-ingest...")
-    base_path = Path(__file__).resolve().parent  
-    f_path = base_path / "app" / "nusantaracare_panduan_operasional_internal_v2.md"
-    
+    base_path = Path(__file__).resolve().parent[1]  
+    f_path = base_path / "nusantaracare_panduan_operasional_internal_v2.md"
+    print("[path] yang dituju", f_path)
+
     run_markdown_ingestion(
         file_path=f_path, 
         doc_title="Panduan Operasional Internal NusantaraCare", 
