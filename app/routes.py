@@ -7,15 +7,18 @@ from fastapi.responses import JSONResponse
 from app.ingest_doc import run_markdown_ingestion
 from app.schemas import QueryInput, RAGResponse
 from app.service.agent import AgenticRouter
-
+from pathlib import Path
 logger = logging.getLogger("uvicorn.error")
 router = APIRouter()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("[Startup] Memeriksa data SOP baru untuk di-ingest...")
+    base_path = Path(__file__).resolve().parent  
+    f_path = base_path / "app" / "nusantaracare_panduan_operasional_internal_v2.md"
+    
     run_markdown_ingestion(
-        file_path=r".\app\nusantaracare_panduan_operasional_internal_v2.md", 
+        file_path=f_path, 
         doc_title="Panduan Operasional Internal NusantaraCare", 
         version="2.0"
     )
