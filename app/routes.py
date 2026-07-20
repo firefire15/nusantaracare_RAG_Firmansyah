@@ -57,4 +57,7 @@ async def chat_endpoint(payload: QueryInput):
 
 @app.get("/")
 async def root():
-    return {"status": "ok"}
+    return {
+        "message": "Aplikasi RAG NusantaraCare",
+        "status": "ok"
+        }
