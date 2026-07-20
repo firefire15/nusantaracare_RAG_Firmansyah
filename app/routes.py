@@ -2,13 +2,14 @@ import traceback
 import sys
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import APIRouter, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from app.ingest_doc import run_markdown_ingestion
 from app.schemas import QueryInput, RAGResponse
 from app.service.agent import AgenticRouter
 
 logger = logging.getLogger("uvicorn.error")
+router = APIRouter()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,7 +33,7 @@ async def catch_exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as exc:
-        print(f" ERROR TERJALIN PADA: {request.url.path}")
+        print(f" ERROR TERJADI PADA: {request.url.path}")
         
         traceback.print_exception(*sys.exc_info())
         print("="*50 + "\n")
@@ -53,3 +54,7 @@ async def chat_endpoint(payload: QueryInput):
             status_code=500, 
             detail=f"Internal Server Error: {str(e)}"
         )
+
+@app.get("/")
+async def root():
+    return {"status": "ok"}
